@@ -1,0 +1,15 @@
+
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "rootDir": "./scripts",
+    "outDir": "./compiled",
+    "strict": true,
+    "sourceMap": false,
+    "declaration": false,
+    "declarationMap": false,
+    "skipLibCheck": true
+  },
+  "include": ["scripts/**/*.ts"]
+}
