@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Svampletarna</title>
     <link rel="stylesheet" href="../css/style.css">
-    <script src="../script.js" defer></script>
+    <script src="../compiled/blogg.js" defer></script>
 </head>
 <body>
     <header>
@@ -24,9 +24,8 @@
         <section class="intro">
             <article>
                 <h2>Blogg</h2>
-                <p>Logga in för att skriva inlägg i vår blogg.</p>
             </article>   
-            <form id="formen" method="get">
+            <form id="form" method="get">
                 <p>
                     <label for="username">Namn:</label>
                     <input type="text" id="username" placeholder="Namn" name="namn" required>
@@ -36,7 +35,7 @@
                     <input type="password" id="password" placeholder="Lösenord" name="password" required>
                 </p>
                 <p>
-                    <input id="vidare" type="submit" value="Logga in">
+                    <input id="login" type="submit" value="Logga in">
                 </p>
             </form>
                 <p class="message" id="message"></p>

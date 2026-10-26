@@ -182,7 +182,7 @@ footer p {
 #shroomlist button,
 #myShroomList button,
 #clearButton,
-#vidare,
+#login,
 #logout {
     background-color: var(--beige);
     color: var(--darkBrown);
