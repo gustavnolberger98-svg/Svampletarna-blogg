@@ -15,8 +15,10 @@ function init(): void {
 }
 
 window.onload = init; // Kör init-funktionen när sidan har laddats.
-
-function checkLogin(): void { // Funktion som kontrollerar om användaren är inloggad eller inte.
+///////////////////////////////////////////////////////////////////
+//Funktion som kontrollerar om användaren är inloggad eller inte.//
+///////////////////////////////////////////////////////////////////
+function checkLogin(): void { 
     const formRef = document.querySelector<HTMLFormElement>("#form");
     const buttonRef = document.querySelector<HTMLButtonElement>("#logout");
     const welcomeRef = document.querySelector<HTMLDivElement>("#welcome");
@@ -39,8 +41,10 @@ function checkLogin(): void { // Funktion som kontrollerar om användaren är in
         }
     }
 }    
-
-function login(e: SubmitEvent): void { // Funktion som hanterar inloggning.
+/////////////////////////////////////
+//Funktion som hanterar inloggning.//
+/////////////////////////////////////
+function login(e: SubmitEvent): void { 
     e.preventDefault(); // Förhindrar att formuläret skickas och sidan laddas om.
 
     const usernameRef = document.querySelector<HTMLInputElement>("#username");
@@ -67,9 +71,9 @@ function login(e: SubmitEvent): void { // Funktion som hanterar inloggning.
         }
     }
 }
-////////////////////////////////////////////////
-//      Funktino för hantera utloggning       //
-////////////////////////////////////////////////
+///////////////////////////////////
+//Funktino för hantera utloggning//
+///////////////////////////////////
 function logout(): void { 
     const formRef = document.querySelector<HTMLFormElement>("#form"); // Hämtar referensen till formuläret.
     const messageRef = document.querySelector<HTMLDivElement>("#message");
@@ -86,3 +90,26 @@ function logout(): void {
 
     checkLogin();
 }
+
+interface BloggPublish {
+    title: string;
+    user: string;
+    text: string;
+    date: string;
+
+}
+
+const myPublish: BloggPublish = {
+
+};
+
+const dateToday: Date = new Date();
+
+const bloggFormRef =
+    document.querySelector<HTMLFormElement>("#bloggForm");
+
+const titleRef =
+    document.querySelector<HTMLInputElement>("#title");
+    
+const textRef =
+    document.querySelector<HTMLTextAreaElement>("#text");    

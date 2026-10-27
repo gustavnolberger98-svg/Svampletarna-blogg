@@ -106,7 +106,8 @@ main {
 /* Svamplistor för mobil */
 #shroomlist,
 #myShroomList,
-#blogglista {
+#blogglista,
+#blogg {
     display: grid;
     gap: 20px;
 }
@@ -114,7 +115,8 @@ main {
 /* Svampkort på båda sidorna */
 #shroomlist article,
 #myShroomList article,
-#blogglista article {
+#blogglista article,
+#blogg {
     background-color: var(--sageGreen);
     border: 2px solid var(--darkBrown);
     border-radius: 8px;
@@ -183,7 +185,8 @@ footer p {
 #myShroomList button,
 #clearButton,
 #login,
-#logout {
+#logout,
+#publish {
     background-color: var(--beige);
     color: var(--darkBrown);
     border: 1px solid var(--darkBrown);
@@ -209,6 +212,12 @@ footer p {
 #username,
 #password {
     background-color:#e6dccb;
+}
+
+#bloggForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 /* Navigation för desktop */
