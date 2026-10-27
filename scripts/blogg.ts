@@ -107,8 +107,8 @@ function myPublish(event: SubmitEvent): void {
     const user: string | null = localStorage.getItem("username");
 
     if (titleRef && textRef && user) {
-        const title: string = titleRef.valueOf;
-        const text: string = textRef.valueOf;
+        const title: string = titleRef.value;
+        const text: string = textRef.value;
 
         const newPublish: BloggPublish = {
             title: title,
@@ -119,7 +119,6 @@ function myPublish(event: SubmitEvent): void {
         console.log(newPublish);
         titleRef.value = "";
         textRef.value = "";
-        }
     }
 }
 
