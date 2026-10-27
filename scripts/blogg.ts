@@ -3,14 +3,18 @@ const correctpassword: string = "qwe123";
 
 function init(): void {
     const buttonRef = document.querySelector<HTMLButtonElement>("#logout");
-    const formRef = document.querySelector<HTMLFormElement>("form");
+    const formRef = document.querySelector<HTMLFormElement>("#form");
+    const bloggFormRef = document.querySelector<HTMLFormElement>("#bloggForm");
 
     if (buttonRef && formRef) {
         buttonRef.style.display = "none"; // Döljer knappen för tillfället.
         checkLogin();
-
+   
         formRef.addEventListener("submit", login);
-        buttonRef.addEventListener("click", logout); 
+        buttonRef.addEventListener("click", logout);
+    }
+    if (bloggFormRef) {
+        bloggFormRef.addEventListener("submit", myPublish);
     }
 }
 
@@ -24,20 +28,23 @@ function checkLogin(): void {
     const welcomeRef = document.querySelector<HTMLDivElement>("#welcome");
 
     const inloggad: string | null = localStorage.getItem("inloggad");
-    const username: string | null = localStorage.getItem("username");   
+    const username: string | null = localStorage.getItem("username");
+    const bloggFormRef = document.querySelector<HTMLFormElement>("#bloggForm");    
 
-    if (formRef && buttonRef && welcomeRef) { // Kontrollera att referenserna inte är null innan du använder dem.
+    if (formRef && buttonRef && welcomeRef && bloggFormRef) { // Kontrollera att referenserna inte är null innan du använder dem.
 
         if (inloggad === "true") { // Om användaren är inloggad, döljs formuläret och knappen visas.
             formRef.style.display = "none";
             buttonRef.style.display = "block";
             welcomeRef.style.display = "block";
+            bloggFormRef.style.display = "block";
             
             welcomeRef.textContent = `Välkommen ${username}!`;
         } else { // Om användaren inte är inloggad, visas formuläret och knappen döljs.
             formRef.style.display = "block";
             buttonRef.style.display = "none";
             welcomeRef.style.display = "none";
+            bloggFormRef.style.display = "none";
         }
     }
 }    
@@ -91,6 +98,32 @@ function logout(): void {
     checkLogin();
 }
 
+function myPublish(event: SubmitEvent): void {
+    event.preventDefault();
+    
+    const titleRef = document.querySelector<HTMLInputElement>("#title");
+    const textRef = document.querySelector<HTMLTextAreaElement>("#text");
+
+    const user: string | null = localStorage.getItem("username");
+
+    if (titleRef && textRef && user) {
+        const title: string = titleRef.valueOf;
+        const text: string = textRef.valueOf;
+
+        const newPublish: BloggPublish = {
+            title: title,
+            user: user,
+            text: text,
+            date: new Date().toLocaleDateString("sv-SE")
+        };
+        console.log(newPublish);
+        titleRef.value = "";
+        textRef.value = "";
+        }
+    }
+}
+
+
 interface BloggPublish {
     title: string;
     user: string;
@@ -98,18 +131,4 @@ interface BloggPublish {
     date: string;
 
 }
-
-const myPublish: BloggPublish = {
-
-};
-
 const dateToday: Date = new Date();
-
-const bloggFormRef =
-    document.querySelector<HTMLFormElement>("#bloggForm");
-
-const titleRef =
-    document.querySelector<HTMLInputElement>("#title");
-    
-const textRef =
-    document.querySelector<HTMLTextAreaElement>("#text");    
