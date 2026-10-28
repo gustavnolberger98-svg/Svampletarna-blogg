@@ -103,7 +103,9 @@ function logout(): void {
 
     checkLogin();
 }
-
+//////////////////////////////////////
+//funmktion för att publicera inlägg//
+//////////////////////////////////////
 function myPublish(event: SubmitEvent): void {
     event.preventDefault();
     
@@ -143,7 +145,9 @@ function myPublish(event: SubmitEvent): void {
         textRef.value = "";
     }
 }
-
+/////////////////////////////////////
+//Funktion för att skriva ut inlägg//
+/////////////////////////////////////
 function showPublishes(): void {
     const bloggPrintRef = document.querySelector<HTMLElement>("#bloggPrint");
 
@@ -159,7 +163,7 @@ function showPublishes(): void {
 
     bloggPrintRef.replaceChildren(); 
 
-    publishes.forEach((publish: BloggPublish) => {
+    publishes.forEach((publish: BloggPublish, index: number) => {
         const article = document.createElement("article");
         const heading = document.createElement("h2");
         const author = document.createElement("p");
@@ -172,8 +176,109 @@ function showPublishes(): void {
         date.textContent = publish.date;
 
         article.append(heading, author, content, date);
+
+        const commentHeading = document.createElement("h4");
+        commentHeading.textContent = "Kommentarer";
+        article.appendChild(commentHeading);
+
+        const comments: BloggComment[] = publish.comments ?? [];
+
+        comments.forEach((comment:BloggComment) => {
+            const commentArticle = document.createElement("article");
+            const commentAuthor = document.createElement("p");
+            const commentText = document.createElement("p");
+            const commentDate = document.createElement("p");
+            
+            commentAuthor.textContent = `skrivet av: ${comment.user}`;
+            commentText.textContent = comment.text;
+            commentDate.textContent = comment.date;
+
+            commentArticle.append(commentAuthor, commentText, commentDate);
+            
+            article.appendChild(commentArticle);  
+        });
+        const inloggad: string | null = localStorage.getItem("inloggad");
+
+    if (inloggad === "true") {
+        const commentForm = document.createElement("form");
+        const commentInput = document.createElement("textarea");
+        const commentButton = document.createElement("button");
+        commentButton.className = "comment-button";
+
+        commentInput.placeholder = "Skriv en kommentar";
+        commentInput.required = true;
+
+        commentButton.textContent = "Kommentera";
+        commentButton.type = "submit";
+
+        commentForm.append(commentInput, commentButton);
+
+        commentForm.addEventListener("submit", (event: SubmitEvent) => {
+            commentPub(event, index, commentInput);
+            }
+        );
+        article.appendChild(commentForm);    
+        
+    }
+    else {
+            const loginInfo = document.createElement("p");
+            loginInfo.textContent = "Logga in För att kommentera.";
+            article.appendChild(loginInfo);
+        }
         bloggPrintRef.appendChild(article);
     });
+}
+
+//////////////////////////////////////
+//Funktion för att kommentera inlägg//
+//////////////////////////////////////
+function commentPub(
+    event: SubmitEvent,
+    publishIndex: number,
+    commentInput: HTMLTextAreaElement
+): void {
+    event.preventDefault();
+
+    const inloggad: string | null = localStorage.getItem("inloggad");
+    const user: string | null = localStorage.getItem("username");
+
+    if (inloggad !== "true" || !user) {
+        return;
+    }
+
+    const text: string = commentInput.value.trim();
+
+    if (text === "") {
+        return;
+    }
+
+    const savedPublishes: string | null = localStorage.getItem("bloggInlagg"); //Hämtar blogginläggen
+    const publishes: BloggPublish[] = savedPublishes
+        ? JSON.parse(savedPublishes) as BloggPublish[]
+        : [];
+    const publish: BloggPublish | undefined = publishes[publishIndex];
+
+
+    if (!publish) {
+        return;
+    }
+
+    const newComment: BloggComment = {
+        user: user,
+        text: text,
+        date: new Date().toLocaleDateString("sv-SE")
+    };
+    
+    if (!publish.comments) {
+        publish.comments = [];
+    }
+
+    publish.comments.push(newComment);
+
+    localStorage.setItem("bloggInlagg", JSON.stringify(publishes));
+
+    showPublishes();
+
 }
 
 
@@ -182,6 +287,11 @@ interface BloggPublish {
     user: string;
     text: string;
     date: string;
-
+    comments?: BloggComment[];
 }
 
+interface BloggComment {
+    user: string;
+    text: string;
+    date: string;
+}

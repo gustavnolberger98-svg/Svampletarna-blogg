@@ -86,6 +86,9 @@ function logout() {
     }
     checkLogin();
 }
+//////////////////////////////////////
+//funmktion för att publicera inlägg//
+//////////////////////////////////////
 function myPublish(event) {
     event.preventDefault();
     const titleRef = document.querySelector("#title");
@@ -114,6 +117,9 @@ function myPublish(event) {
         textRef.value = "";
     }
 }
+/////////////////////////////////////
+//Funktion för att skriva ut inlägg//
+/////////////////////////////////////
 function showPublishes() {
     const bloggPrintRef = document.querySelector("#bloggPrint");
     if (!bloggPrintRef) {
@@ -124,7 +130,7 @@ function showPublishes() {
         ? JSON.parse(savedPublishes)
         : [];
     bloggPrintRef.replaceChildren();
-    publishes.forEach((publish) => {
+    publishes.forEach((publish, index) => {
         const article = document.createElement("article");
         const heading = document.createElement("h2");
         const author = document.createElement("p");
@@ -135,6 +141,76 @@ function showPublishes() {
         content.textContent = publish.text;
         date.textContent = publish.date;
         article.append(heading, author, content, date);
+        const commentHeading = document.createElement("h4");
+        commentHeading.textContent = "Kommentarer";
+        article.appendChild(commentHeading);
+        const comments = publish.comments ?? [];
+        comments.forEach((comment) => {
+            const commentArticle = document.createElement("article");
+            const commentAuthor = document.createElement("p");
+            const commentText = document.createElement("p");
+            const commentDate = document.createElement("p");
+            commentAuthor.textContent = `skrivet av: ${comment.user}`;
+            commentText.textContent = comment.text;
+            commentDate.textContent = comment.date;
+            commentArticle.append(commentAuthor, commentText, commentDate);
+            article.appendChild(commentArticle);
+        });
+        const inloggad = localStorage.getItem("inloggad");
+        if (inloggad === "true") {
+            const commentForm = document.createElement("form");
+            const commentInput = document.createElement("textarea");
+            const commentButton = document.createElement("button");
+            commentButton.className = "comment-button";
+            commentInput.placeholder = "Skriv en kommentar";
+            commentInput.required = true;
+            commentButton.textContent = "Kommentera";
+            commentButton.type = "submit";
+            commentForm.append(commentInput, commentButton);
+            commentForm.addEventListener("submit", (event) => {
+                commentPub(event, index, commentInput);
+            });
+            article.appendChild(commentForm);
+        }
+        else {
+            const loginInfo = document.createElement("p");
+            loginInfo.textContent = "Logga in För att kommentera.";
+            article.appendChild(loginInfo);
+        }
         bloggPrintRef.appendChild(article);
     });
+}
+//////////////////////////////////////
+//Funktion för att kommentera inlägg//
+//////////////////////////////////////
+function commentPub(event, publishIndex, commentInput) {
+    event.preventDefault();
+    const inloggad = localStorage.getItem("inloggad");
+    const user = localStorage.getItem("username");
+    if (inloggad !== "true" || !user) {
+        return;
+    }
+    const text = commentInput.value.trim();
+    if (text === "") {
+        return;
+    }
+    const savedPublishes = localStorage.getItem("bloggInlagg"); //Hämtar blogginläggen
+    const publishes = savedPublishes
+        ? JSON.parse(savedPublishes)
+        : [];
+    const publish = publishes[publishIndex];
+    if (!publish) {
+        return;
+    }
+    const newComment = {
+        user: user,
+        text: text,
+        date: new Date().toLocaleDateString("sv-SE")
+    };
+    if (!publish.comments) {
+        publish.comments = [];
+    }
+    publish.comments.push(newComment);
+    localStorage.setItem("bloggInlagg", JSON.stringify(publishes));
+    showPublishes();
 }
