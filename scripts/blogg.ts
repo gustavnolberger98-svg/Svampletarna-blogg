@@ -1,22 +1,23 @@
 const correctname: string = "Kalle";
 const correctpassword: string = "qwe123";
 
-function init(): void {
+function init(): void {//Kontrollerar att saker hittas innan användning, samt ser till att rätt funktioner kan köras.
+    //Hämtar Från HTML.
     const buttonRef = document.querySelector<HTMLButtonElement>("#logout");
     const formRef = document.querySelector<HTMLFormElement>("#form");
     const bloggFormRef = document.querySelector<HTMLFormElement>("#bloggForm");
-
+    //Kontrollerar att det finns.
     if (buttonRef && formRef) {
         buttonRef.style.display = "none"; // Döljer knappen för tillfället.
-        checkLogin();
-   
-        formRef.addEventListener("submit", login);
-        buttonRef.addEventListener("click", logout);
+        checkLogin(); //Funktionen körs och kollar om användaren är inloggad.
+        
+        formRef.addEventListener("submit", login); //Skapar ett event för loginknappen
+        buttonRef.addEventListener("click", logout); //Skapar ett event för logga ut knappen.
     }
-    if (bloggFormRef) {
+    if (bloggFormRef) { //Om formuläret finns så läggs ett event till.
         bloggFormRef.addEventListener("submit", myPublish);
     }
-    showPublishes();
+    showPublishes(); //Hämtar och visar blogginläggen som finns sparade.
 }
 
 window.onload = init; // Kör init-funktionen när sidan har laddats.
@@ -32,15 +33,15 @@ function checkLogin(): void {
 
     const inloggad: string | null = localStorage.getItem("inloggad");
     const username: string | null = localStorage.getItem("username");
-    const bloggFormRef = document.querySelector<HTMLFormElement>("#bloggForm");    
+    const bloggRef = document.querySelector<HTMLElement>("#blogg");    
 
-    if (formRef && buttonRef && welcomeRef && bloggFormRef && loginMessageRef) { // Kontrollera att referenserna inte är null innan du använder dem.
+    if (formRef && buttonRef && welcomeRef && bloggRef && loginMessageRef) { // Kontrollera att referenserna inte är null innan du använder dem.
 
         if (inloggad === "true") { // Om användaren är inloggad, döljs formuläret och knappen visas.
             formRef.style.display = "none";
             buttonRef.style.display = "block";
             welcomeRef.style.display = "block";
-            bloggFormRef.style.display = "block";
+            bloggRef.style.display = "block";
             loginMessageRef.style.display = "none";
             
             welcomeRef.textContent = `Välkommen ${username}!`;
@@ -49,7 +50,7 @@ function checkLogin(): void {
             formRef.style.display = "block";
             buttonRef.style.display = "none";
             welcomeRef.style.display = "none";
-            bloggFormRef.style.display = "none";
+            bloggRef.style.display = "none";
             loginMessageRef.style.display = "block";
         }
     }
@@ -74,11 +75,12 @@ function login(e: SubmitEvent): void {
             localStorage.setItem("inloggad", "true");
             localStorage.setItem("username", username);
             
-            messageRef.textContent = "";
+            messageRef.textContent = ""; //Hade problem att om jag först fick felmeddelande så visades det efter lyckat inlogg.
             
-            checkLogin();
+            checkLogin(); //Kör funktionen checklogin.
+            showPublishes(); //Behövde ladda om sidan efter lyckad inloggning, därför las detta till här som kör funktionen.
 
-        } else {
+        } else { //Om fel lösenord och användarnamn så visas meddelande.
             messageRef.style.display = "block";
             messageRef.textContent = "Fel användarnamn eller lösenord!";
         }
@@ -97,13 +99,16 @@ function logout(): void {
         formRef.reset();// Återställer formuläret till sitt ursprungliga skick.
     }
 
-    if (messageRef) {
+    if (messageRef) { //Döljer eventuellt felmeddelande.
         messageRef.style.display = "none";
     }
 
-    checkLogin();
+    checkLogin(); //I med att man blir utloggad så kan jag köra checklogin funktionen igen.
+    showPublishes(); //Samma sak som innan, loggade jag ut så visades fortfarande kommentera inlägg.
 }
-
+//////////////////////////////////////
+//funmktion för att publicera inlägg//
+//////////////////////////////////////
 function myPublish(event: SubmitEvent): void {
     event.preventDefault();
     
@@ -143,7 +148,9 @@ function myPublish(event: SubmitEvent): void {
         textRef.value = "";
     }
 }
-
+/////////////////////////////////////
+//Funktion för att skriva ut inlägg//
+/////////////////////////////////////
 function showPublishes(): void {
     const bloggPrintRef = document.querySelector<HTMLElement>("#bloggPrint");
 
@@ -159,7 +166,7 @@ function showPublishes(): void {
 
     bloggPrintRef.replaceChildren(); 
 
-    publishes.forEach((publish: BloggPublish) => {
+    publishes.forEach((publish: BloggPublish, index: number) => {
         const article = document.createElement("article");
         const heading = document.createElement("h2");
         const author = document.createElement("p");
@@ -172,8 +179,112 @@ function showPublishes(): void {
         date.textContent = publish.date;
 
         article.append(heading, author, content, date);
+
+        const commentHeading = document.createElement("h4");
+        commentHeading.textContent = "Kommentarer:";
+        article.appendChild(commentHeading);
+
+        const comments: BloggComment[] = publish.comments ?? [];
+
+        comments.forEach((comment:BloggComment) => {
+            const commentArticle = document.createElement("article");
+            const commentAuthor = document.createElement("p");
+            const commentText = document.createElement("p");
+            const commentDate = document.createElement("p");
+            commentArticle.className = "comment-art";
+            
+            commentAuthor.textContent = `Inlägg skrivet av: ${comment.user}`;
+            commentText.textContent = comment.text;
+            commentDate.textContent = comment.date;
+
+            commentArticle.append(commentAuthor, commentText, commentDate);
+            
+            article.appendChild(commentArticle);  
+        });
+        const inloggad: string | null = localStorage.getItem("inloggad");
+        
+
+    if (inloggad === "true") {
+        const commentForm = document.createElement("form");
+        const commentInput = document.createElement("textarea");
+        const commentButton = document.createElement("button");
+        commentButton.className = "comment-button";
+        commentInput.className = "comment-area";
+
+        commentInput.placeholder = "Skriv en kommentar";
+        commentInput.required = true;
+
+        commentButton.textContent = "Kommentera";
+        commentButton.type = "submit";
+
+        commentForm.append(commentInput, commentButton);
+
+        commentForm.addEventListener("submit", (event: SubmitEvent) => {
+            commentPub(event, index, commentInput);
+            }
+        );
+        article.appendChild(commentForm);    
+        
+    }
+    else {
+            const loginInfo = document.createElement("p");
+            loginInfo.textContent = "Logga in För att kommentera.";
+            article.appendChild(loginInfo);
+        }
         bloggPrintRef.appendChild(article);
     });
+}
+
+//////////////////////////////////////
+//Funktion för att kommentera inlägg//
+//////////////////////////////////////
+function commentPub(
+    event: SubmitEvent,
+    publishIndex: number,
+    commentInput: HTMLTextAreaElement
+): void {
+    event.preventDefault();
+
+    const inloggad: string | null = localStorage.getItem("inloggad");
+    const user: string | null = localStorage.getItem("username");
+
+    if (inloggad !== "true" || !user) {
+        return;
+    }
+
+    const text: string = commentInput.value.trim();
+
+    if (text === "") {
+        return;
+    }
+
+    const savedPublishes: string | null = localStorage.getItem("bloggInlagg"); //Hämtar blogginläggen
+    const publishes: BloggPublish[] = savedPublishes
+        ? JSON.parse(savedPublishes) as BloggPublish[]
+        : [];
+    const publish: BloggPublish | undefined = publishes[publishIndex];
+
+
+    if (!publish) {
+        return;
+    }
+
+    const newComment: BloggComment = {
+        user: user,
+        text: text,
+        date: new Date().toLocaleDateString("sv-SE")
+    };
+    
+    if (!publish.comments) {
+        publish.comments = [];
+    }
+
+    publish.comments.push(newComment);
+
+    localStorage.setItem("bloggInlagg", JSON.stringify(publishes));
+
+    showPublishes();
+
 }
 
 
@@ -182,6 +293,11 @@ interface BloggPublish {
     user: string;
     text: string;
     date: string;
-
+    comments?: BloggComment[];
 }
 
+interface BloggComment {
+    user: string;
+    text: string;
+    date: string;
+}
