@@ -106,7 +106,8 @@ main {
 /* Svamplistor för mobil */
 #shroomlist,
 #myShroomList,
-#blogglista {
+#bloggPrint,
+#blogg {
     display: grid;
     gap: 20px;
 }
@@ -114,7 +115,8 @@ main {
 /* Svampkort på båda sidorna */
 #shroomlist article,
 #myShroomList article,
-#blogglista article {
+#bloggPrint article,
+#blogg {
     background-color: var(--sageGreen);
     border: 2px solid var(--darkBrown);
     border-radius: 8px;
@@ -183,7 +185,8 @@ footer p {
 #myShroomList button,
 #clearButton,
 #login,
-#logout {
+#logout,
+#publish {
     background-color: var(--beige);
     color: var(--darkBrown);
     border: 1px solid var(--darkBrown);
@@ -191,6 +194,11 @@ footer p {
     padding: 10px 15px;
     font-weight: bold;
     cursor: pointer;
+}
+
+#logout {
+    display: block;
+    margin: 10px auto;
 }
 
 /* Ändrar färg när muspekaren är över knappen */
@@ -206,9 +214,49 @@ footer p {
     cursor: default;
 }
 
-#username,
-#password {
-    background-color:#e6dccb;
+#bloggForm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#bloggForm label {
+    font-size: 1.3rem;
+    color: var(--darkGray);
+    font-weight: bold;
+}
+
+#bloggForm label,
+#bloggForm input,
+#bloggForm textarea,
+#bloggForm button {
+    display: block;
+}
+
+#bloggForm textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+#bloggForm button {
+    width: 20%;
+    box-sizing: border-box;
+}
+
+#bloggForm input {
+    width: 40%;
+}
+
+#bloggForm input,
+#bloggForm textarea {
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--darkGray);
+    background-color: var(--beige);
+    border: 1px solid var(--darkBrown);
+    border-radius: 5px;
+    padding: 10px;
 }
 
 /* Navigation för desktop */
